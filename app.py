@@ -6,17 +6,6 @@ from flask import Response, render_template, Flask
 app = Flask(__name__)
 
 
-class Camera(object):
-    IMAGE_COUNT = 30
-
-    def __init__(self):
-        self.frames = [open('images/%d.png' % f, 'rb').read()
-                       for f in range(self.IMAGE_COUNT)]
-
-    def get_frame(self):
-        return self.frames[int(now()) % self.IMAGE_COUNT]
-
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -33,6 +22,18 @@ def gen(camera):
         frame = camera.get_frame()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+
+class Camera(object):
+    IMAGE_COUNT = 30
+    FRAMES_PER_SECOND = 3
+
+    def __init__(self):
+        self.frames = [open('images/%d.png' % f, 'rb').read()
+                       for f in range(self.IMAGE_COUNT)]
+
+    def get_frame(self):
+        return self.frames[int(now()*self.FRAMES_PER_SECOND) % self.IMAGE_COUNT]
 
 
 if __name__ == '__main__':
