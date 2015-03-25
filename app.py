@@ -1,4 +1,5 @@
 from time import time as now
+from functools import wraps
 
 from flask import Response, render_template, Flask
 
@@ -11,13 +12,18 @@ def index():
     return render_template('index.html')
 
 
+def gen(func, *args, **kwargs):
+    @wraps(func)
+    def _():
+        return Response(func(*args, **kwargs),
+                        mimetype='multipart/x-mixed-replace; boundary=frame')
+    return _
+
+
 @app.route('/video_feed')
+@gen
 def video_feed():
-    return Response(gen(Camera()),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
-def gen(camera):
+    camera = Camera()
     while True:
         frame = camera.get_frame()
         yield (b'--frame\r\n'
