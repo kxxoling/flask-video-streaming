@@ -2,6 +2,7 @@ from time import sleep, time as now
 from functools import wraps
 
 from flask import Response, render_template, Flask
+from flask.ext.decorators import gen
 
 
 FRAMES_PER_SECOND = 3
@@ -15,16 +16,8 @@ def index():
     return render_template('index.html')
 
 
-def gen(func, *args, **kwargs):
-    @wraps(func)
-    def _():
-        return Response(func(*args, **kwargs),
-                        mimetype='multipart/x-mixed-replace; boundary=frame')
-    return _
-
-
 @app.route('/video_feed')
-@gen
+@gen('multipart/x-mixed-replace; boundary=frame')
 def video_feed():
     camera = Camera()
 
