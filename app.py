@@ -1,7 +1,6 @@
 from time import sleep, time as now
-from functools import wraps
 
-from flask import Response, render_template, Flask
+from flask import render_template, Flask
 from flask.ext.decorators import gen
 
 
